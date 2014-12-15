@@ -1,0 +1,40 @@
+Notas para ejecutar store procedure de la base de datos
+-------------------------------------------------------
+1- En caso que el procecimiento almacenado a llamar tenga como parametro "rastro", se debe 
+duplicar el procecimiento almacenado pero sin el parametro "rastro".
+2- Agregar el método en el facade de la clase. Ejemplo:
+	public void confirmarPersonaFormacion(PersonaFormacion personaFormacion, String funcion) throws Exception {
+        Query query = em.createNativeQuery("select " + funcion + "(?);")           
+                                   .setParameter(1, personaFormacion.getIdPersonaFormacion()); 
+        query.getSingleResult();    
+    }
+3- Agregar el método en el Bean de la clase. Ejemplo:
+	public void confirmarPersonaFormacion() {
+        try {
+            this.userPrivilegeValidate(PersonaFormacionConstants.FUNCION_CONFIRMAR_PERSONA_FORMACION);
+            if (this.usuarioAutorizado.equals(true)) {     
+                getPersonaFormacionFacade().confirmarPersonaFormacion(
+                        selectedPersonaFormacion,
+                        PersonaFormacionConstants.PROCESO_FUNCION_CONFIRMAR_PERSONA_FORMACION);
+                
+                this.createRastroFuncion(PersonaFormacionConstants.FUNCION_CONFIRMAR_PERSONA_FORMACION);
+                this.createRastroConfirmarPersonaFormacion();
+                
+                closeDialog();
+                displayInfoMessageToUser("Confirmado con éxito", "La formación se ha confirmado exitosamente");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            closeDialog();
+            displayErrorMessageToUser("Confirmar formación fallido", e.getMessage());
+        }
+    }
+4- Agregar el rastro de auditoria. Ejemplo:
+	public void createRastroConfirmarPersonaFormacion() {
+        try {          
+            getRastroFuncionParametroFacade().createRastroFuncionParametro(idRastroFuncion, PersonaFormacionConstants.PARAMETRO_ID_PERSONA_FORMACION, String.valueOf(selectedPersonaFormacion.getIdPersonaFormacion()));            
+            getRastroFuncionParametroFacade().createRastroFuncionParametro(idRastroFuncion, PersonaFormacionConstants.PARAMETRO_ES_DOCUMENTO_CONFIRMADO, String.valueOf(1));            
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }

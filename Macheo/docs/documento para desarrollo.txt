@@ -1,0 +1,62 @@
+Documento para desarrollo JSF2 (Mojarra) + JPA + Primefaces 
+
+1- Crear el entity class del recurso principal en el paquete "entity"
+	1.1- En caso de que sea un entity class en base a una vista, se debe agregar el Id correspondiente al entity
+	1.2- Agregar "NamedQuery"s conforme a las consultas que se requieran
+2- Crear el bean que utilizará la página
+	2.1- Constructor
+	2.2- Validación de inicio de sesión
+		2.2.1- SessionValidate
+		2.2.2- UserFunctionValidate: referenciar a la función principal de la página, utilizando las constantes definidas
+				en la librería "com.egt.base.entity.constants"
+		2.2.3- No implementar el UserFunctionValidate para "mi info" porque no se controlan roles.
+	2.3- Managed Component Definition: definir los componentes a utilizar en la página
+		2.3.1- Definir las variables a utilizar en la página
+			-- inicializar objetos Disabled: uno por cada parametro del recurso
+			select 'private Boolean '|| replace(initcap(p.codigo_parametro),'_','') ||'Disabled;' 
+			from funcion_parametro fp
+			inner join parametro p on p.id_parametro = fp.id_parametro
+			inner join funcion f on f.id_funcion = fp.id_funcion
+			inner join dominio d on d.id_dominio = f.id_dominio
+			inner join clase_recurso cr on cr.id_clase_recurso = d.id_clase_recurso
+			where f.codigo_funcion like 'consultar_%'
+				and cr.codigo_clase_recurso = 'resolucion_ministerial'
+			order by fp.id_funcion_parametro;
+		
+		2.3.2- Gets y Sets de la variables (generar con netbeans)
+	2.4- Métodos específicos	
+		2.4.1- Para utilizar JPA y JPQ se debe instanciar "EntityManagerFactory" de la clase JpaUtil
+		-- funcion: setearObjetoDisabled
+		select 'this.'|| replace(initcap(p.codigo_parametro),'_','') ||'Disabled = trueorfalse;' 
+		from funcion_parametro fp
+		inner join parametro p on p.id_parametro = fp.id_parametro
+		inner join funcion f on f.id_funcion = fp.id_funcion
+		inner join dominio d on d.id_dominio = f.id_dominio
+		inner join clase_recurso cr on cr.id_clase_recurso = d.id_clase_recurso
+		where f.codigo_funcion like 'consultar_%'
+			and cr.codigo_clase_recurso = 'resolucion_ministerial'
+		order by fp.id_funcion_parametro;
+
+	2.5- Implementar el data model (lazy)
+		2.5.1- Crear el lazy del objeto principal, en el package "model"
+	2.6- Método de rastro de auditoria
+		2.6.1- Para la definicion de las constantes utilizar:
+			select 'rfb.rastroParametro(rfb.getIdRastroFuncion(),ResolucionMinisterialConstants.PARAMETRO_'||upper(codigo_parametro) ||', String.valueOf(resolucionMinisterial.get'|| replace(initcap(p.codigo_parametro),'_','') ||'()));' 
+			from funcion_parametro fp
+			inner join parametro p on p.id_parametro = fp.id_parametro
+			inner join funcion f on f.id_funcion = fp.id_funcion
+			inner join dominio d on d.id_dominio = f.id_dominio
+			inner join clase_recurso cr on cr.id_clase_recurso = d.id_clase_recurso
+			where f.codigo_funcion like 'consultar_%'
+				and cr.codigo_clase_recurso = 'resolucion_ministerial'
+			order by fp.id_funcion_parametro;
+3- Crear la clase controller del recurso: para CRUD
+4- Crear la página
+	4.1- Utilizar la plantilla de acuerdo al sub módulo: "mi info"--> layout, o "expediciones" layoutMenu. La plantilla solo con cabecera es layoutEmpty
+5- Crear o copiar el reporte en el paquete "reports"
+	5.1- Modificar el reporte en caso de que se copie de "atenea-lib-juke"
+		5.1.1- Modificar el logo del reporte, colocando como un parametro a ser enviado desde la clase "reporte"
+		5.1.2- Verificar los parametros del reporte, y estos sean los mismos que seran enviados desde la clase "reporte"
+		5.1.3- Modificar el dataSource del reporte agregando el where con los parametros correspondientes
+		5.1.4- Compilar y copiar el .jasper al paquete "reports"
+	5.2- Crear el método para llamar al reporte creado en la clase reporte.java

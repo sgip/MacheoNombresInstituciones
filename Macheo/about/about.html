@@ -1,0 +1,227 @@
+<!DOCTYPE html> 
+<html lang="es">
+	<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+	<!-- code format -->
+	<link rel="stylesheet" href="code/mono-blue.css">	
+	<script src="code/highlight.js"></script>
+	<script src="code/java.js"></script>	
+	<!-- jquery -->
+	<link rel="stylesheet" href="jquery/jquery-ui.css">
+	<script src="jquery/jquery-1.10.2.js"></script>
+	<script src="jquery/jquery-ui.js"></script>
+	<script>
+		hljs.initHighlightingOnLoad();		
+		$(function() {
+			/* se agregan estas condiciones para que no tome un height definido, se adecua al contenido  */
+			//para el acordeon mas de afuera
+			$("#accordion").show().accordion({
+				autoHeight: false
+			});
+
+			$("#accordion div").css({ 'height': 'auto' });
+			//para el acordeon de adentro en donde aparecen las heuristicas
+			$("#heuristicas").show().accordion({
+				autoHeight: false
+			});
+
+			$("#heuristicas div").css({ 'height': 'auto' });
+			/* fin adecuarse al contenito */
+			$( "#accordion" ).accordion();
+			$( "#heuristicas" ).accordion();
+			
+			
+		});
+	</script>
+	<style type="text/css">
+		body {
+			margin: 0;
+			font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+			font-size: 14px;
+			line-height: 20px;
+			color: #444444;
+			background-color: #eeeeee;
+		}
+		
+		.container {
+			margin-right: auto;
+			margin-left: auto;			
+		}
+		
+		.hero-unit{
+			background-color: #FFF;
+			border: 1px solid #cccccc;
+			-webkit-border-radius: 4px;
+			-moz-border-radius: 4px;
+			border-radius: 4px;
+			margin: 20px 0;
+			-webkit-box-shadow: 0 0 0 4px rgba(0,0,0,0.05);
+			-moz-box-shadow: 0 0 0 4px rgba(0,0,0,0.05);
+			box-shadow: 0 0 0 4px rgba(0,0,0,0.05);
+			position: relative;
+			background: #ffffff url("../../../base/images/nav.png") 0 0 repeat-y;
+			margin-bottom: 20px;
+		}
+    </style>
+	<head>
+		<meta charset="utf-8" />
+		<title>Acerca de</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	</head>
+    
+	<div class="container">
+		<div class="hero-unit">			
+			<p>
+				<a class="btn btn-primary btn-large">
+					Accerca de
+				</a><br>
+			La función main utilizada para el macheo de nombres es el siguiente:
+			
+<pre>
+	<code>
+	Paso 1.
+	<b>String normalizarString(String cadena);</b>
+	Paso 2.
+	<b>boolean StringEquality(String nombre1, String nombre2);</b>
+	Paso 3.
+	<b>if(heuristica)</b>
+	Paso 4.
+	<b>int calcularDistanciaDamerauLevenshtein(String nombre1, nombre2);</b>
+	Paso 5.
+	<b>if(umbral);</b>
+	</code>
+</pre>
+		<div id="accordion">
+		  <h3><b>Paso 1.</b></h3>
+		  <div>
+			<p>			
+			Lo primero que se realiza es normalizar las cadenas, esto debido a que no  tienen un formato estándar.
+			Se procede a reemplazar las abreviaturas para todos los niveles educativos, extraer espacios en blanco del principio y fin de la cadena,
+			quitar acentos. 
+			Ejemplo: Esc por "ESCUELA".
+			
+			<ul>
+				<b>Quitar espacios del inicio/final de cada cadena</b>
+				<li type="circle">cadena.trim();</li>
+				<b>Pasar a mayúscula</b>
+				<li type="circle">cadena.toUpperCase();</li>							
+				<li type="circle">cadena.replace("Á", "A");</li>
+				<li type="circle">cadena.replace("É", "E");</li>
+				<li type="circle">cadena.replace("Í", "I");</li>
+				<li type="circle">cadena.replace("Ó", "O");</li>
+				<li type="circle">cadena.replace("Ú", "U");</li>
+				<b>Reemplazar carácteres especiales</b>
+				<li type="circle">cadena.replace("(", " ");</li>
+				<li type="circle">cadena.replace(")", " ");</li>
+				<li type="circle">cadena.replace("\"", "");</li>
+				<li type="circle">cadena.replace(".", ". ");</li>
+				<li type="circle">cadena.replace("    ", " ");</li>
+				<li type="circle">cadena.replace("   ", " ");</li>
+				<li type="circle">cadena.replace("  ", " ");</li>
+				<b>Normalizar niveles de instituciones</b>
+				<li type="circle">cadena.replace("ESC.", "ESCUELA");</li>
+				<li type="circle">cadena.replace("ESC ", "ESCUELA ");</li>
+				<li type="circle">cadena.replace("BAS.", "BASICA");</li>
+				<li type="circle">cadena.replace("BAS ", "BASICA ");</li>
+				<li type="circle">cadena.replace("COL.", "COLEGIO");</li>
+				<li type="circle">cadena.replace("COL ", "COLEGIO ");</li>
+				<li type="circle">cadena.replace("NAC.", "NACIONAL");</li>
+				<li type="circle">cadena.replace("NAC ", "NACIONAL ");</li>
+				<li type="circle">cadena.replace("TEC.", "TECNICO");</li>
+				<li type="circle">cadena.replace("TEC ", "TECNICO ");</li>
+				<li type="circle">cadena.replace("PARROQ.", "PARROQUIAL");</li>
+				<li type="circle">cadena.replace("PARROQ ", "PARROQUIAL ");</li>
+				<li type="circle">cadena.replace("PRIV.", "PRIVADO");</li>
+				<li type="circle">cadena.replace("PRIV ", "PRIVADO ");</li>
+				<li type="circle">cadena.replace("SUBV.", "SUBVENCIONADO");</li>
+				<li type="circle">cadena.replace("SUBV ", "SUBVENCIONADO ");</li>
+				<li type="circle">cadena.replace("TEC ", "TECNICO ");</li>
+				<li type="circle">cadena.replace("LIC.", "LICEO");</li>
+				<li type="circle">cadena.replace("LIC ", "LICEO ");</li>
+				<li type="circle">cadena.replace("I. F. D. ", "INSTITUTO FORMACION DOCENTE");</li>
+				<b>Normalizar abreviaturas</b>
+				<li type="circle">cadena.replace("GRAL.", "GENERAL");</li>
+				<li type="circle">cadena.replace("GRAL ", "GENERAL ");</li>
+				<li type="circle">cadena.replace("MCAL.", "MARISCAL");</li>
+				<li type="circle">cadena.replace("MCAL ", "MARISCAL ");</li>
+				<li type="circle">cadena.replace("CPTAN.", "CAPITAN");</li>
+				<li type="circle">cadena.replace("DR.", "DOCTOR");</li>
+				<li type="circle">cadena.replace("DR ", "DOCTOR ");</li>
+				<li type="circle">cadena.replace("STA.", "SANTA");</li>
+				<li type="circle">cadena.replace("STA ", "SANTA ");</li>
+			</ul>
+				
+			</p>
+		  </div>
+		  <h3><b>Paso 2.</b></h3>
+		  <div>
+			<p>
+				Se verifica que las cadenas sean exactamente iguales. Si esto ocurre ya no se compara con otro.
+			</p>
+		  </div>
+		  <h3><b>Paso 3.</b></h3>
+		  <div>
+			<p>
+				Se definieron heurísticas para poder alcanzar un nivel mas exacto de macheo.<br>
+				<div id="heuristicas">
+					<h3>Heurística 1.</h3>
+					<div>
+						<p>
+							Se controla que ambas cadenas contengan la palabra "COLEGIO", esto para evitar realizar comparaciones entre distintos niveles educativos.<br>
+							Si es que los nombres contienen la palabra "COLEGIO" entonces se procede de la siguiente manera:<br>
+							- calcular la distancia entre la mismas.<br>
+							- obtener longitud de la cadena mas larga.<br>
+							- se controla el umbral (distancia <= (longitud*30)/100).<br>
+							En este punto se vuelve a controlar que las cadenas contengan la palabra "PRIVADO", para no comaparar nombre de instituciones públicas con privadas.<br>
+							Si se cumple que ambas sean "NACIONAL" o "PRIVADA", entonces controlamos el una heurística a la que llamamos "Nombre de Santos".<br>
+							Cuando se realizaban las pruebas del macheo nos dimos cuenta de que muchos nombres de santos por dar un ejemplo:<br>
+							<b>S1="San Pablo"</b> con <b>S2="San Pedro"</b><br>
+							La distancia entre los nombres es mínima, es de 3, ya que se deben realizar las siguientes transformaciones:<br>
+							- cambiar "a" de "Pablo" por "e" de "Pedro".<br>
+							- cambiar "b" de "Pablo" por "d" de "Pedro".<br>
+							- cambiar "l" de "Pablo" por "r" de "Pedro".<br>
+							Esto hacia que estos dos nombres sean macheados, cuando no debería de ser así, es ahí donde se verifica "Heuristica de los Santos".<br>
+							<br>
+							En "Heuristica de los Santos", se busca si las cadenas contienenn la palabra "SAN/SANTA/SANTO", si esto es así, entonces debemos de verificar que todo lo que
+							viene después sea exactamente igual.<br>
+							Si no se tiene éxito con el nombre de los Santos, entonces separamos las cadenas en tokens. Y comparamos tokens del nombre1, contra tokens del nombre2<br>
+							tokens: son las palabras que forman la cadena.<br>
+							Ejemplo:<br>
+							"COLEGIO NACIONAL SANTA LUCIA"<br>
+							tokens = ["COLEGIO","NACIONAL","SANTA","LUCIA"]<br>
+							En este caso se machea, si se cumple lo siguiente: "(cantidad de token coincidente)/(cantidad de tokens mas largo)) >= 0.6"
+						</p>
+					</div>
+					<h3></h3>
+					<div>
+						<p></p>
+					</div>
+				</div>
+			</p>			
+		  </div>
+		  <h3><b>Paso 4.</b></h3>
+		  <div>
+			<p>
+				Se calcula la distancia entre las dos cadenas que se reciben como parámetro.<br>
+				Ejemplo:<br>
+				<p style="background-color: lightblue;">S1= “Goettee”, S2= “Goethe”</p>
+				En este caso la distancia de "Damerau-Levenshtein" es igual a 2, debido a que las transformaciones para pasar de S1 a S2, son:<br>
+				- transformar la segunda "t" de S1 a "h".<br>
+				- eliminar la última "e" de S1.<br>				
+			</p>
+		  </div>
+		  <h3><b>Paso 5.</b></h3>
+		  <div>
+			<p>
+			</p>
+		  </div>
+		</div>		
+	</p>
+			
+		</div>
+	</div>
+
+	
+	<script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+	<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<html>

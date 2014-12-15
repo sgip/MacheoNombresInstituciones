@@ -1,0 +1,423 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core" lang="es">
+
+
+    <ui:composition template="./layoutMicro.xhtml">        
+            <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>  
+
+            <p:dialog modal="true" widgetVar="statusDialog" header="Estado"   
+                      draggable="false" closable="false" resizable="false">  
+                <p:graphicImage value="./resources/images/ajaxloading.gif" />  
+            </p:dialog>
+        <ui:define name="left"> 
+            
+            <h:form id="formMacheoNombresInstituciones" prependId="false">
+                
+                <h:panelGrid columns="2" cellpadding="2">
+                <p:graphicImage value="./resources/images/logo_datos_abiertos.png" width="200px" /> 
+                <p:menubar autoDisplay="false" style="font-size:11px;">  
+                    <p:menuitem value="ACERCA DE" icon="ui-icon-home">
+                        <h:outputLink value="./about/about.html">
+                            
+                            <h:outputLabel value="ACERCA DE" style="font-weight:bold; 
+                                   font-size: 15px"/>
+                        </h:outputLink>
+                    </p:menuitem>
+                </p:menubar>
+                </h:panelGrid>
+                
+                <p:panel id="panelTituloPrincipal"  
+                         style="font-size:15px; text-align: center">
+                    <h:outputLabel value="COMPARACION DE NOMBRES DE INSTITUCIONES EDUCATIVAS" style="font-weight:bold; 
+                                   font-size: 15px"/>
+                </p:panel>
+                <!--<p:panel id="panelTituloPrincipal" header="MACHEO DE NOMBRES DE INSTITUCIONES EDUCATIVAS"  
+                         style="font-size:15px; text-align: center">
+                </p:panel>-->
+                    
+                <p:panel id="panelUpdateDialog" header="SUBIR ARCHIVOS" style="font-size:11px;" toggleable="true" > 
+
+                    <p:focus context="panelUpdateDialog"/>
+
+                    <h:panelGrid columns="2" cellpadding="2">
+                        
+                        <h:panelGrid columns="1" cellpadding="2">   
+                            <h:outputText value=" " style="font-weight:bold; font-size: 14px"/>
+                            <h:outputLabel value="SUBIR 1º ARCHIVO" style="font-weight:bold; font-size: 14px"/>
+                            <h:form id="formSubirArchivo" enctype="multipart/form-data"> 
+                                <h:outputLabel value="Archivo: *" style="font-weight:bold"/>   
+                                <!--<p:inputText id="urlArchivo"
+                                             value="#{macheoNombresInstitucionesEducativasBean.urlPrimerArchivo}"
+                                             size="60" readonly="true" />-->
+                                <h:outputLabel id="urlArchivo"
+                                             value="#{macheoNombresInstitucionesEducativasBean.urlPrimerArchivo}"/>   
+                                <p:fileUpload id="fileUpload" 
+                                              fileUploadListener="#{macheoNombresInstitucionesEducativasBean.handleFileUploadUpdatePrimerArchivo}"
+                                              mode="advanced"   
+                                              auto="true"
+                                              update="formSubirArchivo:urlArchivo, 
+                                              :formMacheoNombresInstituciones:cfhbf,
+                                              :formMacheoNombresInstituciones:dpto,
+                                              :formMacheoNombresInstituciones:distrito,
+                                              :formMacheoNombresInstituciones:codigo" 
+                                              sizeLimit="20000000"   
+                                              allowTypes="/(\.|\/)(txt?|csv|CSV)$/"
+                                              uploadLabel="Subir"
+                                              cancelLabel="Cancelar"
+                                              label="Seleccionar archivo"
+                                              invalidSizeMessage="Tamaño de archivo incorrecto (máximo 500 Kb)"
+                                              invalidFileMessage="Tipo de archivo incorrecto. Solo se aceptan del tipo csv" 
+                                              required="true"
+                                              requiredMessage="Debe adjuntar el archivo, es obligatorio"
+                                              disabled="false">
+                                </p:fileUpload>    
+                                
+                            </h:form>
+                            
+                            <h:outputLabel value="SELECCIONAR LAS COLUMNAS DEL ARCHIVO 1" style="font-weight:bold; font-size: 12px"/>
+                            <h:panelGrid columns="2"> 
+                            <h:outputLabel value="Columna para el Nombre de la Institución (*)" style="font-weight:bold"/> 
+                            <p:selectOneMenu id="cfhbf" style="width: 190px"
+                                             value="#{macheoNombresInstitucionesEducativasBean.nombre1}"
+                                             binding="#{macheoNombresInstitucionesEducativasBean.selectOneMenuNombre1}"
+                                             disabled="#{macheoNombresInstitucionesEducativasBean.archivo1Disabled}"
+                                             valueChangeListener="#{macheoNombresInstitucionesEducativasBean.valueChangeListener1()}"
+                                             required="true" requiredMessage="Archivo 1: Debe especificar la columna del nombre de la institución">
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                <f:selectItems value="#{macheoNombresInstitucionesEducativasBean.columnasList1}"/>
+                                <p:ajax update="dpto, distrito, codigo, cfhbfMsg"/>
+                            </p:selectOneMenu>
+                            <p:message id="cfhbfMsg" for="cfhbf"/>
+                            <h:outputText value=""/>
+                            
+                            <h:outputLabel value="Columna para el Departamento (*)" style="font-weight:bold"/> 
+                            <p:selectOneMenu id="dpto" style="width: 190px"
+                                             value="#{macheoNombresInstitucionesEducativasBean.departamento1}"
+                                             binding="#{macheoNombresInstitucionesEducativasBean.selectOneMenuDepartamento1}"
+                                             disabled="#{macheoNombresInstitucionesEducativasBean.archivo1Disabled}"
+                                             valueChangeListener="#{macheoNombresInstitucionesEducativasBean.valueChangeListener2()}"
+                                             required="true" requiredMessage="Archivo 1: Debe especificar la columna del departamento">
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                <f:selectItems value="#{macheoNombresInstitucionesEducativasBean.columnasList2}"/>
+                                <p:ajax update="cfhbf, distrito, codigo, dptoMsg"/>
+                            </p:selectOneMenu>
+                            <p:message id="dptoMsg" for="dpto"/>
+                            <h:outputText value=""/>
+                            
+                            <h:outputLabel value="Columna para el Distrito" style="font-weight:bold"/> 
+                            <p:selectOneMenu id="distrito" style="width: 190px"
+                                             value="#{macheoNombresInstitucionesEducativasBean.distrito1}"
+                                             binding="#{macheoNombresInstitucionesEducativasBean.selectOneMenuDistrito1}"
+                                             disabled="#{macheoNombresInstitucionesEducativasBean.archivo1Disabled}"
+                                             valueChangeListener="#{macheoNombresInstitucionesEducativasBean.valueChangeListener3()}">
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                <f:selectItems value="#{macheoNombresInstitucionesEducativasBean.columnasList3}"/>
+                                <p:ajax update="cfhbf, dpto, codigo"/>
+                            </p:selectOneMenu>
+                            <p:message id="distritoMsg" for="distrito" />
+                            <h:outputText value=""/>
+                            
+                            <h:outputLabel value="Columna para el Código de la Institución" style="font-weight:bold"/> 
+                            <p:selectOneMenu id="codigo" style="width: 190px" 
+                                             value="#{macheoNombresInstitucionesEducativasBean.codigo1}"
+                                             binding="#{macheoNombresInstitucionesEducativasBean.selectOneMenuCodigo1}"
+                                             disabled="#{macheoNombresInstitucionesEducativasBean.archivo1Disabled}"
+                                             valueChangeListener="#{macheoNombresInstitucionesEducativasBean.valueChangeListener4()}">
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                <f:selectItems value="#{macheoNombresInstitucionesEducativasBean.columnasList4}"/>
+                                <p:ajax update="cfhbf, distrito,departamento"/>
+                            </p:selectOneMenu>
+                            <p:message id="codigoMsg" for="codigo"/>
+                            <h:outputText value=""/>
+                            </h:panelGrid>
+                            
+                        </h:panelGrid> 
+                        
+                        <h:panelGrid columns="1" cellpadding="2">
+                            <h:panelGrid columns="2" cellpadding="2">
+                            <p:selectBooleanCheckbox value="#{macheoNombresInstitucionesEducativasBean.archivoPorDefecto}"
+                                                     valueChangeListener="#{macheoNombresInstitucionesEducativasBean.utilizarArchivoPorDefecto()}"
+                                                     binding="#{macheoNombresInstitucionesEducativasBean.selectBooleanCheckbox}"
+                                                     >
+                                <p:ajax update="formSubirSegundoArchivo"/>
+                            </p:selectBooleanCheckbox>
+                            <h:outputLabel value="Comparar con la Lista de Instituciones de Datos Abiertos del MEC" style="font-weight:bold; font-size: 14px"/>
+                            </h:panelGrid>
+                            <p:separator/>
+                            <h:outputLabel value="SUBIR 2º ARCHIVO" style="font-weight:bold; font-size: 14px"/> 
+                            <h:form id="formSubirSegundoArchivo" enctype="multipart/form-data"> 
+                                <h:outputLabel value="Archivo: *" style="font-weight:bold"/>   
+                                <!--<p:inputText id="urlArchivo2"
+                                             value="#{macheoNombresInstitucionesEducativasBean.urlSegundoArchivo}"
+                                             disabled="false"
+                                             readonly="true" 
+                                             size="60"/>-->
+                                <h:outputLabel id="urlArchivo2"
+                                             value="#{macheoNombresInstitucionesEducativasBean.urlSegundoArchivo}"/> 
+                                <p:fileUpload id="fileUploadSegundoArchivo" 
+                                              fileUploadListener="#{macheoNombresInstitucionesEducativasBean.handleFileUploadUpdateSegundoArchivo}"  
+                                              mode="advanced"   
+                                              auto="true"
+                                              update="formSubirSegundoArchivo:urlArchivo2 
+                                              :formMacheoNombresInstituciones:plo, 
+                                              :formMacheoNombresInstituciones:hji, 
+                                              :formMacheoNombresInstituciones:we, 
+                                              :formMacheoNombresInstituciones:ugh " 
+                                              sizeLimit="3000000"   
+                                              allowTypes="/(\.|\/)(txt?|csv|CSV)$/"
+                                              uploadLabel="Subir"
+                                              cancelLabel="Cancelar"
+                                              label="Seleccionar archivo"
+                                              invalidSizeMessage="Tamaño de archivo incorrecto (máximo 500 Kb)"
+                                              invalidFileMessage="Tipo de archivo incorrecto. Solo se aceptan del tipo csv" 
+                                              required="true"
+                                              requiredMessage="Debe adjuntar el archivo, es obligatorio"
+                                              disabled="#{macheoNombresInstitucionesEducativasBean.archivo2AdjuntoDisabled}"/>         
+                            </h:form> 
+                            
+                            <h:outputLabel value="SELECCIONAR LAS COLUMNAS DEL ARCHIVO 2" style="font-weight:bold; font-size: 12px"/>
+                            <h:panelGrid columns="2"> 
+                            <h:outputLabel value="Columna para el Nombre de la Institución (*)" style="font-weight:bold"/> 
+                            <p:selectOneMenu id="plo" style="width: 190px"
+                                             value="#{macheoNombresInstitucionesEducativasBean.nombre2}"
+                                             binding="#{macheoNombresInstitucionesEducativasBean.selectOneMenuNombre2}"
+                                             disabled="#{macheoNombresInstitucionesEducativasBean.archivo2Disabled}"
+                                             valueChangeListener="#{macheoNombresInstitucionesEducativasBean.valueChangeListener5()}"
+                                             required="true" requiredMessage="Archivo 2: Debe especificar la columna del nombre de la institución">
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                <f:selectItems value="#{macheoNombresInstitucionesEducativasBean.columnas2List1}"/>
+                                <p:ajax update="hji, we, ugh, ploMsg"/>
+                            </p:selectOneMenu>
+                            <p:message id="ploMsg" for="plo"/>
+                            <h:outputText value=""/>
+                            
+                            <h:outputLabel value="Columna para el Departamento (*)" style="font-weight:bold"/> 
+                            <p:selectOneMenu id="hji" style="width: 190px"
+                                             value="#{macheoNombresInstitucionesEducativasBean.departamento2}"
+                                             binding="#{macheoNombresInstitucionesEducativasBean.selectOneMenuDepartamento2}"
+                                             disabled="#{macheoNombresInstitucionesEducativasBean.archivo2Disabled}"
+                                             valueChangeListener="#{macheoNombresInstitucionesEducativasBean.valueChangeListener6()}"
+                                             required="true" requiredMessage="Archivo 2: Debe especificar la columna del departamento">
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                <f:selectItems value="#{macheoNombresInstitucionesEducativasBean.columnas2List2}"/>
+                                <p:ajax update="plo, we, ugh, hjiMsg"/>
+                            </p:selectOneMenu>
+                            <p:message id="hjiMsg" for="hji"/>
+                            <h:outputText value=""/>
+                            
+                            <h:outputLabel value="Columna para el Distrito" style="font-weight:bold"/> 
+                            <p:selectOneMenu id="we" style="width: 190px"
+                                             value="#{macheoNombresInstitucionesEducativasBean.distrito2}"
+                                             binding="#{macheoNombresInstitucionesEducativasBean.selectOneMenuDistrito2}"
+                                             disabled="#{macheoNombresInstitucionesEducativasBean.archivo2Disabled}"
+                                             valueChangeListener="#{macheoNombresInstitucionesEducativasBean.valueChangeListener7()}">
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                <f:selectItems value="#{macheoNombresInstitucionesEducativasBean.columnas2List3}"/>
+                                <p:ajax update="hji, plo, ugh, weMsg"/>
+                            </p:selectOneMenu>
+                            <p:message id="weMsg" for="we"/>
+                            <h:outputText value=""/>
+                            
+                            <h:outputLabel value="Columna para el Código de la Institución" style="font-weight:bold"/> 
+                            <p:selectOneMenu id="ugh" style="width: 190px" 
+                                             value="#{macheoNombresInstitucionesEducativasBean.codigo2}"
+                                             binding="#{macheoNombresInstitucionesEducativasBean.selectOneMenuCodigo2}"
+                                             disabled="#{macheoNombresInstitucionesEducativasBean.archivo2Disabled}"
+                                             valueChangeListener="#{macheoNombresInstitucionesEducativasBean.valueChangeListener8()}">
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                <f:selectItems value="#{macheoNombresInstitucionesEducativasBean.columnas2List4}"/>
+                                <p:ajax update="hji, we, plo, ughMsg"/>
+                            </p:selectOneMenu>
+                            <p:message id="ughMsg" for="ugh"/>
+                            <h:outputText value=""/>
+                            </h:panelGrid>
+
+                        </h:panelGrid> 
+                    </h:panelGrid> 
+                    
+                    <p:separator/>
+                    
+                    <h:panelGrid columns="4">
+                    <h:outputLabel for="departamento" value="DEPARTAMENTO: " style="font-weight:bold"/>
+                    <p:selectOneMenu id="departamento"
+                                     value="#{macheoNombresInstitucionesEducativasBean.nombreDepartamento}"                                         
+                                     effect="fade" style="font-size:11px;" immediate="true"
+                                     binding="#{macheoNombresInstitucionesEducativasBean.selectOneMenuDepartamento}">
+                        <f:selectItem itemLabel="ASUNCION" itemValue="ASUNCION"/>
+                        <f:selectItem itemLabel="CONCEPCION" itemValue="CONCEPCION"/>
+                        <f:selectItem itemLabel="SAN PEDRO" itemValue="SAN PEDRO"/>
+                        <f:selectItem itemLabel="CORDILLERA" itemValue="CORDILLERA"/>
+                        <f:selectItem itemLabel="GUAIRA" itemValue="GUAIRA"/>
+                        <f:selectItem itemLabel="CAAGUAZU" itemValue="CAAGUAZU"/>
+                        <f:selectItem itemLabel="CAAZAPA" itemValue="CAAZAPA"/>
+                        <f:selectItem itemLabel="ITAPUA" itemValue="ITAPUA"/>
+                        <f:selectItem itemLabel="MISIONES" itemValue="MISIONES"/>
+                        <f:selectItem itemLabel="PARAGUARI" itemValue="PARAGUARI"/>
+                        <f:selectItem itemLabel="ALTO PARANA" itemValue="ALTO PARANA}"/>
+                        <f:selectItem itemLabel="CENTRAL" itemValue="CENTRAL"/>
+                        <f:selectItem itemLabel="ÑEEMBUCU" itemValue="ÑEEMBUCU"/>
+                        <f:selectItem itemLabel="AMAMBAY" itemValue="AMAMBAY"/>
+                        <f:selectItem itemLabel="CANINDEYU" itemValue="CANINDEYU"/>
+                        <f:selectItem itemLabel="PRESIDENTE HAYES" itemValue="PRESIDENTE HAYES"/>
+                        <f:selectItem itemLabel="BOQUERON" itemValue="BOQUERON"/>
+                        <f:selectItem itemLabel="ALTO PARAGUAY" itemValue="ALTO PARAGUAY"/>
+
+                    </p:selectOneMenu>
+                    <p:spacer/>
+                    <p:commandButton id="actualizarButton"
+                                         value=" COMPARAR "
+                                         icon="ui-icon-check"
+                                         ajax="true"
+                                         action="#{macheoNombresInstitucionesEducativasBean.registrarDatos()}"
+                                         process="@this, @form, formSubirArchivo, formSubirSegundoArchivo"
+                                         rendered="true" 
+                                         update="@this, @form"
+                                         >
+                    </p:commandButton>
+    
+                    </h:panelGrid>
+
+                </p:panel>
+ 
+                <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>
+                <p:tabView id="tabViewDialog"  >
+                    
+                    <p:tab id="tabViewDialog1" title="Instituciones Macheadas" disabled="false">
+                        <p:contextMenu for="tbInstitucionesMacheadas">  
+                        <!--<p:menuitem value="Detalle" update=":formDependenciaViewDialog" 
+                                    icon="ui-icon-search" oncomplete="dependenciaViewDialogWidget.show()"
+                                    title="Ver detalle registro"/>  
+                        <p:menuitem value="Editar" update=":formDependenciaUpdateDialog" 
+                                    icon="ui-icon-pencil" actionListener="#{confirmarCuadroPersonaDescentralizadoBean.updateOnClick()}"
+                                    title="Editar registro"/>  -->
+                        <p:menuitem value="Confirmar" update="tbInstitucionesMacheadas" 
+                                    icon="ui-icon-trash" actionListener="#{macheoNombresInstitucionesEducativasBean.confirmarRegistrosSeleccionados()}"
+                                    title="Eliminar registro"/>
+                        <p:menuitem value="Eliminar" update="tbInstitucionesMacheadas" 
+                                    icon="ui-icon-trash" actionListener="#{macheoNombresInstitucionesEducativasBean.eliminarRegistrosSeleccionados()}"
+                                    title="Eliminar registro"/>
+                    </p:contextMenu>
+                        <p:dataTable id="tbInstitucionesMacheadas" var="row"
+                                     value="#{macheoNombresInstitucionesEducativasBean.institucionesMacheadas}"  
+                                 widgetVar="institucionesMacheadasTable"
+                                 emptyMessage="No se encontraron resultados"
+                                 lazy="true"
+                                 paginator="true" rows="10"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15" filterDelay="1000"
+                                 selection="#{macheoNombresInstitucionesEducativasBean.selectedInstitucionesMacheadaArray}"
+                                 style="font-size:11px;" paginatorPosition="bottom">
+                            <p:column filterBy="#{row.institucion1.codigoPrincipal}" sortBy="#{row.institucion1.codigoPrincipal}" rendered="false" exportable="true" >
+                                <f:facet name="header">
+                                    <h:outputText value="Codigo Institucion 1" />
+                                </f:facet>
+                                <h:outputText value="#{row.institucion1.codigoPrincipal}" /> 
+                            </p:column>
+                            <p:column filterBy="#{row.institucion1.codigoPrincipal}" sortBy="#{row.institucion1.codigoPrincipal}" >
+                                <f:facet name="header">
+                                    <h:outputText value="Codigo Institucion 1" />
+                                </f:facet>
+                                <h:outputText value="#{row.institucion1.codigoPrincipal}" /> 
+                            </p:column>
+                            <p:column filterBy="#{row.institucion1.nombreInstitucionOriginal}" sortBy="#{row.institucion1.nombreInstitucionOriginal}">
+                                <f:facet name="header">
+                                    <h:outputText value="Nombre Institucion 1" />
+                                </f:facet>
+                                <h:outputText value="#{row.institucion1.nombreInstitucionOriginal}" /> 
+                            </p:column>
+                            <p:column filterBy="#{row.institucion2.codigoPrincipal}" sortBy="#{row.institucion2.codigoPrincipal}">
+                                <f:facet name="header">
+                                    <h:outputText value="Codigo Institucion 2" />
+                                </f:facet>
+                                <h:outputText value="#{row.institucion2.codigoPrincipal}" /> 
+                            </p:column>
+                            <p:column filterBy="#{row.institucion2.nombreInstitucionOriginal}" sortBy="#{row.institucion2.nombreInstitucionOriginal}">
+                                <f:facet name="header">
+                                    <h:outputText value="Nombre Institucion 2" />
+                                </f:facet>
+                                <h:outputText value="#{row.institucion2.nombreInstitucionOriginal}" /> 
+                            </p:column>
+                            <p:column filterBy="#{row.institucion1.nombreDistrito}" sortBy="#{row.institucion1.nombreDistrito}">
+                                <f:facet name="header">
+                                    <h:outputText value="Distrito 1" />
+                                </f:facet>
+                                <h:outputText value="#{row.institucion1.nombreDistrito}" /> 
+                            </p:column>
+                            <p:column filterBy="#{row.institucion2.nombreDistrito}" sortBy="#{row.institucion2.nombreDistrito}">
+                                <f:facet name="header">
+                                    <h:outputText value="Distrito 2" />
+                                </f:facet>
+                                <h:outputText value="#{row.institucion2.nombreDistrito}" /> 
+                            </p:column>
+                            <p:column headerText="Correcto" exportable="false">
+                                <p:selectOneMenu value="#{row.estado}" immediate="true" >
+                                    <f:selectItem itemLabel="SI" itemValue="#{true}" />                                    
+                                    <f:selectItem itemLabel="NO" itemValue="#{false}"  />
+                                    <p:ajax update="tbInstitucionesMacheadas" listener="#{macheoNombresInstitucionesEducativasBean.deleteOnClick(row)}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            <f:facet id="footer" name="footer">
+                                Total Filas: #{macheoNombresInstitucionesEducativasBean.institucionesMacheadas.rowCount}<br/>
+                                Exportar como CSV: <h:commandLink title="a CSV">
+                                    <p:graphicImage value="./resources/images/csv.png" /> 
+                                    <p:dataExporter type="csv" target="tbInstitucionesMacheadas" fileName="Instituciones Macheadas" 
+                                        pageOnly="false" encoding="ISO-8859-7" />  
+                                </h:commandLink>
+                            </f:facet>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+                
+                
+                <br/>
+                <p:spacer height="10"/> 
+                <p:panel>
+                    <h:outputText value="Exportar datos en formato CSV:  " style="font-weight: bold" />
+                    <p:spacer height="10"/> 
+                    <h:commandLink title="a CSV">
+                        <p:graphicImage value="./resources/images/csv.png" /> 
+                        <p:dataExporter type="csv" target="tabViewDialog:tbInstitucionesMacheadas" fileName="Instituciones Macheadas" 
+                                        pageOnly="false" encoding="ISO-8859-7" />  
+                    </h:commandLink>
+                </p:panel>
+                <p:separator />
+                <p:panel id="panelPiePagina"  
+                         style="font-size:15px; text-align: center">
+                    <h:outputLink value="http://creativecommons.org/licenses/by/4.0/">
+                    <p:graphicImage value="./resources/images/cc-by.png" /> 
+                    </h:outputLink>
+                    
+                </p:panel>
+
+            </h:form>
+            
+            
+            <p:dialog widgetVar="acercaDeDialogWidget"
+		id="acercaDeDialogId" modal="true"
+                closable="true" draggable="true" resizable="false"
+                showEffect="explode" hideEffect="explode">
+                <p:panel id="panelViewDialog" header="ACERCA DE" style="font-size:11px; width: 500px">
+                    <h:outputText value="Este trabajo práctico se llevó a cabo en la Materia Electiva 6 – Datos Abiertos de 
+                                  la Carrera Ingeniería en Informática de la Facultad Politécnica de la Universidad Nacional 
+                                  de Asunción, cátedra del Dr. Prof. Juan Pane y ayudante de cátedra Ing. Rodrigo Parra. 
+                                  El Ministerio de Educación y Cultura tiene a su cargo a las instituciones educativas del país,
+                                  tanto oficiales, subvencionadas como privadas. Debido a la falta de un sistema integrado
+                                  que llegue a todas las dependencias del MEC así como a la falta de la infraestructura necesaria 
+                                  para implementarlo, se manejan diversos listados de nombres de instituciones. Este trabajo tiene 
+                                  como objetivo ofrecer una herramienta que ayude a integrar los nombres de instituciones
+                                  educativas provenientes de diversos escenarios." style="font-weight:bold"/>  
+                </p:panel>
+            </p:dialog>
+            
+            <ui:include src="/institucionMacheadaDeleteDialog.xhtml" />
+            
+        </ui:define>
+    </ui:composition>
+    
+
+</html>

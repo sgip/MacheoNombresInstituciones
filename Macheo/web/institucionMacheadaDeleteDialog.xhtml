@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:body>
+        
+        <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>  
+
+        <p:dialog modal="true" widgetVar="statusDialog" header="Estado"   
+                  draggable="false" closable="false" resizable="false">  
+            <p:graphicImage value="./resources/images/ajaxloading.gif" />  
+        </p:dialog> 
+            
+        <p:dialog widgetVar="institucionMacheadaDeleteDialogWidget" header="Eliminar Fila"
+		id="institucionMacheadaDeleteDialogId" modal="true"
+                closable="true" draggable="true" resizable="false"
+                showEffect="explode" hideEffect="explode">          
+            
+            <h:form id="formInstitucionMacheadaDeleteDialog" prependId="false">               
+                
+                <pe:tooltip global="true" /> 
+                
+                ¿Está seguro que desea eliminar la fila seleccionada?
+                <br/><br/>             
+
+                <h:panelGrid columns="2" cellpadding="2" style="float:right; font-size:11px;">
+                <p:commandButton id="eliminarButton"
+                                 value="Eliminar"
+                                 action="#{macheoNombresInstitucionesEducativasBean.eliminarInstitucionMacheada()}"
+                                 ajax="true" 
+                                 icon="ui-icon-trash"                                          
+                                 update=":formMacheoNombresInstituciones:tabViewDialog"
+                                 process="@form"
+                                 title="Eliminar registro"
+                                 onclick="institucionMacheadaDeleteDialogWidget.hide();"/>                       
+
+                <p:commandButton value="Cancelar" 
+                                 icon="ui-icon-cancel"                                  
+                                 onclick="institucionMacheadaDeleteDialogWidget.hide();" 
+                                 type="button" 
+                                 title="Cancelar"/>
+                </h:panelGrid>
+            </h:form>    
+             
+        </p:dialog>         
+
+    </h:body>
+</html>
